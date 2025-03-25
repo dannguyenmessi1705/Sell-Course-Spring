@@ -1,0 +1,12 @@
+services:
+  mariadb:
+    image: mariadb:10.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: course
+      MYSQL_USER: course
+      MYSQL_PASSWORD: learn2025
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db:/var/lib/mysql

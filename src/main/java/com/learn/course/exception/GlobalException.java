@@ -126,7 +126,8 @@ public class GlobalException extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(ResourceAlreadyExistsException.class)
-  public ResponseEntity<Object> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, WebRequest request) {
+  public ResponseEntity<Object> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex,
+      WebRequest request) {
     Status statusErr = Status.builder()
         .path(SubStringURIUtils.cutURI(request.getDescription(false)))
         .code(HttpStatus.CONFLICT.value())
@@ -134,5 +135,16 @@ public class GlobalException extends ResponseEntityExceptionHandler {
         .timestamp(LocalDateTime.now().toString())
         .build();
     return new ResponseEntity<>(new GeneralResponse<>(statusErr, null), HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+    Status statusErr = Status.builder()
+        .path(SubStringURIUtils.cutURI(request.getDescription(false)))
+        .code(HttpStatus.BAD_REQUEST.value())
+        .message(ex.getMessage())
+        .timestamp(LocalDateTime.now().toString())
+        .build();
+    return new ResponseEntity<>(new GeneralResponse<>(statusErr, null), HttpStatus.BAD_REQUEST);
   }
 }

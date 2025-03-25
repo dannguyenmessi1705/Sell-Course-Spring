@@ -2,6 +2,7 @@ package com.learn.course.util;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,7 +78,9 @@ public class JwtUtils {
 
   public String getExpirationDate(String token) {
     Jwt jwt = jwtDecoder.decode(token);
-    return jwt.getExpiresAt() != null ? jwt.getExpiresAt().toString() : null;
+    return Optional.ofNullable(jwt.getExpiresAt())
+        .map(Instant::toString)
+        .orElse(null);
   }
 
 }

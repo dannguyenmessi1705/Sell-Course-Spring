@@ -1,5 +1,7 @@
 package com.learn.course.util;
 
+import com.learn.course.auth.CustomUserPrincipal;
+import com.learn.course.model.entity.UsersEntity;
 import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -31,11 +33,12 @@ public class JwtUtils {
   private final JwtDecoder jwtDecoder;
 
   public String createAccessToken(Authentication authentication) {
+    CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
     JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuer(issuer)
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(60 * expireMinutes))
-        .subject(authentication.getName())
+        .subject(userPrincipal.getUserId().toString())
         .claim("scope", createScope(authentication))
         .claim("type", "access_token")
         .build();
@@ -44,11 +47,12 @@ public class JwtUtils {
   }
 
   public String createRefreshToken(Authentication authentication) {
+    CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
     JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuer(issuer)
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(60 * refreshExpireMinutes))
-        .subject(authentication.getName())
+        .subject(userPrincipal.getUserId().toString())
         .claim("type", "refresh_token")
         .build();
     JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(claims);

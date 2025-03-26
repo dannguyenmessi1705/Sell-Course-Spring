@@ -153,9 +153,9 @@ public class AuthServiceImpl implements IAuthService {
     if (authentication == null) {
       throw new BadRequestException("User not authenticated");
     }
-    String accessToken = ((Jwt) authentication.getCredentials()).getTokenValue();
-    if (!jwtUtils.isAccessToken(accessToken)) {
-      throw new BadRequestException("Invalid access token");
+    String refreshToken = ((Jwt) authentication.getCredentials()).getTokenValue();
+    if (!jwtUtils.isRefreshToken(refreshToken)) {
+      throw new BadRequestException("Invalid refresh token");
     }
     log.info("Generating tokens");
     String newAccessToken = jwtUtils.createAccessToken(authentication);

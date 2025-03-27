@@ -19,10 +19,12 @@ import java.security.cert.CertificateFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -50,6 +52,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 public class SecurityConfig {
 
+  @Value("#{'${course.route.permit}'.split(',')}")
+  private String[] routesPermit;
+
   private final CustomUserDetails customUserDetails;
   private final ResourceLoader resourceLoader;
 
@@ -68,7 +73,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(req -> req
-            .requestMatchers("/course/auth/**", "/course/images/**", "/v3/api-docs**/**", "/swagger-ui/**")
+            .requestMatchers(routesPermit)
             .permitAll()
             .anyRequest().authenticated())
         .httpBasic(AbstractHttpConfigurer::disable)

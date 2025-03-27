@@ -58,7 +58,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(request) {
       @Override
       public String getHeader(String name) {
-        if (TrackingConstant.X_REQUEST_ID.getHeaderKey().equalsIgnoreCase(name)) {
+        if (TrackingConstant.X_USER_ID.getHeaderKey().equalsIgnoreCase(name)) {
           return userId;
         }
         return super.getHeader(name);

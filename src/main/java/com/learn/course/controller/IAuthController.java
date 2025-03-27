@@ -32,7 +32,7 @@ public interface IAuthController {
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = GeneralResponse.class)))
   })
   @PostMapping("/login")
-  public ResponseEntity<GeneralResponse<LoginResponseDTO>> login(
+  ResponseEntity<GeneralResponse<LoginResponseDTO>> login(
       @Valid @org.springframework.web.bind.annotation.RequestBody LoginRequestDTO request);
 
   @Operation(summary = "Signup", description = "Signup to the system", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = SignupRequestDTO.class))), responses = {
@@ -40,7 +40,7 @@ public interface IAuthController {
       @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(implementation = GeneralResponse.class)))
   })
   @PostMapping("/signup")
-  public ResponseEntity<GeneralResponse<SignupResponseDTO>> signup(
+  ResponseEntity<GeneralResponse<SignupResponseDTO>> signup(
       @Valid @org.springframework.web.bind.annotation.RequestBody SignupRequestDTO request);
 
   @Operation(summary = "Grant Role", description = "Grant role to the user", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = GrantRoleRequestDTO.class))), responses = {
@@ -50,7 +50,7 @@ public interface IAuthController {
       @SecurityRequirement(name = "Bearer Authentication")
   })
   @PutMapping("/grant-role")
-  public ResponseEntity<GeneralResponse<Object>> grantRole(
+  ResponseEntity<GeneralResponse<Object>> grantRole(
       @Valid @org.springframework.web.bind.annotation.RequestBody GrantRoleRequestDTO request);
 
   @Operation(summary = "Revoke Role", description = "Revoke role from the user", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = RevokeRoleRequestDTO.class))), responses = {
@@ -60,7 +60,7 @@ public interface IAuthController {
       @SecurityRequirement(name = "Bearer Authentication")
   })
   @PutMapping("/revoke-role")
-  public ResponseEntity<GeneralResponse<Object>> revokeRole(
+  ResponseEntity<GeneralResponse<Object>> revokeRole(
       @Valid @org.springframework.web.bind.annotation.RequestBody RevokeRoleRequestDTO request);
 
   @Operation(summary = "Refresh Token", description = "Refresh token", responses = {
@@ -70,6 +70,6 @@ public interface IAuthController {
       @SecurityRequirement(name = "Bearer Authentication")
   })
   @PostMapping("/refresh-token")
-  public ResponseEntity<GeneralResponse<Object>> refreshToken();
-  
+  ResponseEntity<GeneralResponse<Object>> refreshToken();
+
 }

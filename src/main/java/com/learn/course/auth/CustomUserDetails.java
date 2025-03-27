@@ -23,12 +23,12 @@ public class CustomUserDetails implements UserDetailsService {
     String usernameTrim = StringUtils.trimAllWhitespace(username);
     UsersEntity user = null;
     if (ValidateUtils.isValidEmail(usernameTrim)) {
-      Optional<UsersEntity> userOptional = userRepository.findUsersEntityByEmail(usernameTrim);
+      Optional<UsersEntity> userOptional = userRepository.findUsersEntityByEmailIgnoreCase(usernameTrim);
       if (userOptional.isPresent()) {
         user = userOptional.get();
       }
     } else {
-      Optional<UsersEntity> userOptional = userRepository.findUsersEntityByUsername(usernameTrim);
+      Optional<UsersEntity> userOptional = userRepository.findUsersEntityByUsernameIgnoreCase(usernameTrim);
       if (userOptional.isPresent()) {
         user = userOptional.get();
       }

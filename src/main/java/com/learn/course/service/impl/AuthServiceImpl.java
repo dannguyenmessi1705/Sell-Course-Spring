@@ -1,13 +1,9 @@
 package com.learn.course.service.impl;
 
 import com.learn.course.constant.RoleConstant;
-import com.learn.course.constant.StatusCodeConstant;
-import com.learn.course.constant.TrackingConstant;
 import com.learn.course.exception.BadRequestException;
 import com.learn.course.exception.ResourceAlreadyExistsException;
 import com.learn.course.exception.ResourceNotFoundException;
-import com.learn.course.filter.RequestContext;
-import com.learn.course.model.Status;
 import com.learn.course.model.dto.request.GrantRoleRequestDTO;
 import com.learn.course.model.dto.request.LoginRequestDTO;
 import com.learn.course.model.dto.request.RevokeRoleRequestDTO;
@@ -18,10 +14,10 @@ import com.learn.course.model.dto.response.SignupResponseDTO;
 import com.learn.course.model.entity.UsersEntity;
 import com.learn.course.repository.UserRepository;
 import com.learn.course.service.IAuthService;
+import com.learn.course.util.GenericResponseUtils;
 import com.learn.course.util.JwtUtils;
 import com.learn.course.util.ObjectMapperUtils;
 import com.learn.course.util.ValidateUtils;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,25 +55,20 @@ public class AuthServiceImpl implements IAuthService {
         .refreshToken(refreshToken)
         .refreshTokenExpiredAt(jwtUtils.getExpirationDate(refreshToken))
         .build();
-    Status status = Status.builder()
-        .code(StatusCodeConstant.SUCCESS.getCode())
-        .message(StatusCodeConstant.SUCCESS.getMessage())
-        .timestamp(LocalDateTime.now().toString())
-        .build();
     log.info("Login successful");
     return GeneralResponse.<LoginResponseDTO>builder()
         .data(loginResponseDTO)
-        .status(status)
+        .status(GenericResponseUtils.genStatusSuccess())
         .build();
   }
 
   @Override
   public GeneralResponse<SignupResponseDTO> signup(SignupRequestDTO requestDTO) {
     log.info("Verifying request");
-    if (userRepository.findUsersEntityByUsername(requestDTO.getUsername()).isPresent()) {
+    if (userRepository.findUsersEntityByUsernameIgnoreCase(requestDTO.getUsername()).isPresent()) {
       throw new ResourceAlreadyExistsException("Username already exists");
     }
-    if (userRepository.findUsersEntityByEmail(requestDTO.getEmail()).isPresent()) {
+    if (userRepository.findUsersEntityByEmailIgnoreCase(requestDTO.getEmail()).isPresent()) {
       throw new ResourceAlreadyExistsException("Email already exists");
     }
     log.info("Creating user");
@@ -93,6 +84,7 @@ public class AuthServiceImpl implements IAuthService {
     userRepository.save(user);
 
     return GeneralResponse.<SignupResponseDTO>builder()
+        .status(GenericResponseUtils.genStatusSuccess())
         .data(ObjectMapperUtils.map(user, SignupResponseDTO.class))
         .build();
   }
@@ -108,14 +100,9 @@ public class AuthServiceImpl implements IAuthService {
     user.setRole(requestDTO.getRole().toUpperCase());
     userRepository.save(user);
     log.info("Role granted successfully");
-    Status status = Status.builder()
-        .code(StatusCodeConstant.SUCCESS.getCode())
-        .message(StatusCodeConstant.SUCCESS.getMessage())
-        .timestamp(LocalDateTime.now().toString())
-        .build();
     return GeneralResponse.<Object>builder()
         .data(user)
-        .status(status)
+        .status(GenericResponseUtils.genStatusSuccess())
         .build();
   }
 
@@ -137,14 +124,9 @@ public class AuthServiceImpl implements IAuthService {
     user.setRole(RoleConstant.ROLE_STUDENT.getRole());
     userRepository.save(user);
     log.info("Role revoked successfully");
-    Status status = Status.builder()
-        .code(StatusCodeConstant.SUCCESS.getCode())
-        .message(StatusCodeConstant.SUCCESS.getMessage())
-        .timestamp(LocalDateTime.now().toString())
-        .build();
     return GeneralResponse.<Object>builder()
         .data(user)
-        .status(status)
+        .status(GenericResponseUtils.genStatusSuccess())
         .build();
   }
 
@@ -162,11 +144,6 @@ public class AuthServiceImpl implements IAuthService {
     log.info("Generating tokens");
     String newAccessToken = jwtUtils.createAccessToken(authentication);
     String newRefreshToken = jwtUtils.createRefreshToken(authentication);
-    Status status = Status.builder()
-        .code(StatusCodeConstant.SUCCESS.getCode())
-        .message(StatusCodeConstant.SUCCESS.getMessage())
-        .timestamp(LocalDateTime.now().toString())
-        .build();
     LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
         .accessToken(newAccessToken)
         .accessTokenExpiredAt(jwtUtils.getExpirationDate(newAccessToken))
@@ -175,7 +152,7 @@ public class AuthServiceImpl implements IAuthService {
         .build();
     return GeneralResponse.<Object>builder()
         .data(loginResponseDTO)
-        .status(status)
+        .status(GenericResponseUtils.genStatusSuccess())
         .build();
   }
 }

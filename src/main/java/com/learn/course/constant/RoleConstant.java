@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum RoleConstant {
   ROLE_ADMIN("ADMIN"),
   ROLE_STUDENT("STUDENT"),
+  ANONYMOUS_USER("anonymousUser"),
   ROLE_TEACHER("INSTRUCTOR");
 
   private final String role;

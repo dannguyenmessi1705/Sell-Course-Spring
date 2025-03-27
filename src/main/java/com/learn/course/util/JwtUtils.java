@@ -1,10 +1,10 @@
 package com.learn.course.util;
 
 import com.learn.course.auth.CustomUserPrincipal;
-import com.learn.course.model.entity.UsersEntity;
+import com.learn.course.filter.RequestContext;
 import java.time.Instant;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,27 +33,45 @@ public class JwtUtils {
   private final JwtDecoder jwtDecoder;
 
   public String createAccessToken(Authentication authentication) {
-    CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+    CustomUserPrincipal userPrincipal = null;
+    Long subId = null;
+    if (authentication.getPrincipal() instanceof CustomUserPrincipal) {
+      userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+      subId = userPrincipal.getUserId();
+    } else {
+      String accessToken = ((Jwt) authentication.getCredentials()).getTokenValue();
+      subId = Long.parseLong(getSudId(accessToken));
+    }
     JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuer(issuer)
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(60 * expireMinutes))
-        .subject(userPrincipal.getUserId().toString())
+        .subject(authentication.getName())
         .claim("scope", createScope(authentication))
         .claim("type", "access_token")
+        .claim("sub-id", subId)
         .build();
     JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(claims);
     return jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
   }
 
   public String createRefreshToken(Authentication authentication) {
-    CustomUserPrincipal userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+    CustomUserPrincipal userPrincipal = null;
+    Long subId = null;
+    if (authentication.getPrincipal() instanceof CustomUserPrincipal) {
+      userPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+      subId = userPrincipal.getUserId();
+    } else {
+      String refreshToken = ((Jwt) authentication.getCredentials()).getTokenValue();
+      subId = Long.parseLong(getSudId(refreshToken));
+    }
     JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuer(issuer)
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(60 * refreshExpireMinutes))
-        .subject(userPrincipal.getUserId().toString())
+        .subject(authentication.getName())
         .claim("type", "refresh_token")
+        .claim("sub-id", subId)
         .build();
     JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(claims);
     return jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
@@ -68,6 +86,11 @@ public class JwtUtils {
   public String getSubject(String token) {
     Jwt jwt = jwtDecoder.decode(token);
     return jwt.getSubject();
+  }
+
+  public String getSudId(String token) {
+    Jwt jwt = jwtDecoder.decode(token);
+    return jwt.getClaim("sub-id").toString();
   }
 
   public boolean isAccessToken(String token) {
@@ -85,6 +108,11 @@ public class JwtUtils {
     return Optional.ofNullable(jwt.getExpiresAt())
         .map(Instant::toString)
         .orElse(null);
+  }
+
+  public String getTokenFromHeader() {
+    String header = RequestContext.getRequest().getHeader("Authorization");
+    return header.replace("Bearer ", "");
   }
 
 }

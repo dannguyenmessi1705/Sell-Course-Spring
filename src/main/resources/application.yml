@@ -10,9 +10,9 @@ spring:
   application:
     name: course
   datasource:
-    url: jdbc:mariadb://localhost:3307/course
-    username: course
-    password: learn2025
+    url: jdbc:mariadb://localhost:3306/switching
+    username: didannguyen
+    password: 17052002
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       maximum-pool-size: 5

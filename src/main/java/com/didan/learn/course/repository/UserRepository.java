@@ -1,14 +1,10 @@
 package com.didan.learn.course.repository;
 
 import com.didan.learn.course.model.entity.UsersEntity;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<UsersEntity, Long> {
+public interface UserRepository extends MongoRepository<UsersEntity, String> {
 
-  Optional<UsersEntity> findUsersEntityByUsernameIgnoreCase(String username);
-
-  Optional<UsersEntity> findUsersEntityByEmailIgnoreCase(String email);
 }

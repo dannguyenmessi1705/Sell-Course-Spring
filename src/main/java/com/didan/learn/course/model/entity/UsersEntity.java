@@ -1,13 +1,6 @@
 package com.didan.learn.course.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -15,9 +8,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity(name = "users")
+@Document(collection = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -25,40 +21,38 @@ import lombok.NoArgsConstructor;
 public class UsersEntity extends BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private String id;
 
-  @Column(name = "username")
+  @Field(name = "username")
   private String username;
 
-  @Column(name = "fullname")
+  @Field(name = "fullname")
   private String fullName;
 
-  @Column(name = "email")
+  @Field(name = "email")
   private String email;
 
-  @Column(name = "password")
+  @Field(name = "password")
   private String password;
 
-  @Column(name = "role")
+  @Field(name = "role")
   private String role;
 
-  @Column(name = "date_of_birth")
+  @Field(name = "date_of_birth")
   private LocalDate dateOfBirth;
 
-  @Column(name = "avatar_url")
-  @Lob
+  @Field(name = "avatar_url")
   private String avatarUrl;
 
-  @OneToOne(mappedBy = "instructor")
+  @DBRef
   private CoursesEntity course;
 
-  @OneToMany(mappedBy = "student")
+  @DBRef
   private List<EnrollmentsEntity> enrollments;
 
-  @OneToMany(mappedBy = "studentOrder")
+  @DBRef
   private List<OrdersEntity> orders;
 
-  @OneToMany(mappedBy = "studentReview")
+  @DBRef
   private List<ReviewsEntity> reviews;
 }

@@ -31,21 +31,21 @@ public class MongoConfig {
   private String uriForLog;
 
   @Primary
-  @Bean(name = {"mongoProperties"})
+  @Bean
   @ConfigurationProperties(prefix = "app.mongodb")
   public MongoProperties mongoProperties() {
     return new MongoProperties();
   }
 
   @Primary
-  @Bean(name = "mongoClientFactory")
+  @Bean
   public MongoClient mongoClient() {
     log.info("Mongo config uri: {}", uriForLog);
     return MongoClients.create(mongoProperties().getUri());
   }
 
   @Primary
-  @Bean(name = "mongoTemplateFactory")
+  @Bean
   public MongoTemplate mongoTemplate() {
     return new MongoTemplate(mongoClient(), mongoProperties().getDatabase());
   }

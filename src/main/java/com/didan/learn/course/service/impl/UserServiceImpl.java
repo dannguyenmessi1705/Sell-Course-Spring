@@ -2,7 +2,6 @@ package com.didan.learn.course.service.impl;
 
 import com.didan.learn.course.constant.TrackingConstant;
 import com.didan.learn.course.exception.BadRequestException;
-import com.didan.learn.course.exception.ResourceAlreadyExistsException;
 import com.didan.learn.course.exception.ResourceNotFoundException;
 import com.didan.learn.course.filter.RequestContext;
 import com.didan.learn.course.model.dto.request.UserUpdateRequestDTO;
@@ -16,7 +15,6 @@ import com.didan.learn.course.util.ObjectMapperUtils;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
@@ -24,7 +22,7 @@ import org.springframework.util.StringUtils;
  * @since 3/27/2025
  */
 @Slf4j
-@Service
+//@Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
 
@@ -33,8 +31,7 @@ public class UserServiceImpl implements IUserService {
   @Override
   public GeneralResponse<UserInfoResponseDTO> getUserInfo(String userId) {
     try {
-      Long userIdLong = Long.parseLong(userId);
-      UsersEntity user = userRepository.findById(userIdLong).orElseThrow(() ->
+      UsersEntity user = userRepository.findById(userId).orElseThrow(() ->
           new ResourceNotFoundException("User not found"));
 
       return GeneralResponse.<UserInfoResponseDTO>builder()
@@ -50,22 +47,22 @@ public class UserServiceImpl implements IUserService {
   @Override
   public GeneralResponse<UserInfoResponseDTO> updateUserInfo(UserUpdateRequestDTO requestDTO) {
     String userId = RequestContext.getRequest().getHeader(TrackingConstant.X_USER_ID.getHeaderKey());
-    UsersEntity user = userRepository.findById(Long.parseLong(userId)).orElseThrow(() ->
+    UsersEntity user = userRepository.findById(userId).orElseThrow(() ->
         new ResourceNotFoundException("User not found"));
-    if (StringUtils.hasText(requestDTO.getUsername())) {
-      userRepository.findUsersEntityByUsernameIgnoreCase(requestDTO.getUsername())
-          .ifPresent(u -> {
-            throw new ResourceAlreadyExistsException(String.format("Username %s is already taken", u.getUsername()));
-          });
-      user.setUsername(requestDTO.getUsername());
-    }
-    if (StringUtils.hasText(requestDTO.getEmail())) {
-      userRepository.findUsersEntityByEmailIgnoreCase(requestDTO.getEmail())
-          .ifPresent(u -> {
-            throw new ResourceAlreadyExistsException(String.format("Email %s is already taken", u.getEmail()));
-          });
-      user.setEmail(requestDTO.getEmail());
-    }
+//    if (StringUtils.hasText(requestDTO.getUsername())) {
+//      userRepository.findUsersEntityByUsernameIgnoreCase(requestDTO.getUsername())
+//          .ifPresent(u -> {
+//            throw new ResourceAlreadyExistsException(String.format("Username %s is already taken", u.getUsername()));
+//          });
+//      user.setUsername(requestDTO.getUsername());
+//    }
+//    if (StringUtils.hasText(requestDTO.getEmail())) {
+//      userRepository.findUsersEntityByEmailIgnoreCase(requestDTO.getEmail())
+//          .ifPresent(u -> {
+//            throw new ResourceAlreadyExistsException(String.format("Email %s is already taken", u.getEmail()));
+//          });
+//      user.setEmail(requestDTO.getEmail());
+//    }
     if (StringUtils.hasText(requestDTO.getFullName())) {
       user.setFullName(requestDTO.getFullName());
     }
